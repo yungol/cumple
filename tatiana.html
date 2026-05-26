@@ -6,12 +6,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no"
     />
-    <title>Feliz Cumpleaños Tatiana 🎾</title>
+    <title>Feliz Cumpleaños Tatiana</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
     <script>
@@ -19,6 +19,7 @@
         theme: {
           extend: {
             fontFamily: {
+              display: ["Outfit", "sans-serif"],
               pixel: ['"Press Start 2P"', "cursive"],
               body: ["Quicksand", "sans-serif"],
             },
@@ -35,17 +36,24 @@
     </script>
     <style>
       body {
-        background-color: #f0fdf4;
+        background: linear-gradient(
+          160deg,
+          #f0fdf4 0%,
+          #ecfdf5 40%,
+          #dcfce7 100%
+        );
         overscroll-behavior: none;
-        touch-action: none;
+        touch-action: manipulation;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       .crt-scanline {
         background: repeating-linear-gradient(
           0deg,
-          rgba(0, 0, 0, 0.05),
-          rgba(0, 0, 0, 0.05) 1px,
+          rgba(0, 0, 0, 0.04),
+          rgba(0, 0, 0, 0.04) 1px,
           transparent 1px,
-          transparent 2px
+          transparent 3px
         );
         pointer-events: none;
       }
@@ -55,84 +63,127 @@
           transform: translateY(0);
         }
         50% {
-          transform: translateY(-6px);
+          transform: translateY(-8px);
         }
       }
       .float-anim {
-        animation: float 3s ease-in-out infinite;
+        animation: float 3.5s ease-in-out infinite;
       }
       @keyframes twinkle {
         0%,
         100% {
           opacity: 1;
+          transform: scale(1);
         }
         50% {
-          opacity: 0.4;
+          opacity: 0.5;
+          transform: scale(0.92);
         }
       }
       .twinkle {
-        animation: twinkle 2s ease-in-out infinite;
+        animation: twinkle 2.2s ease-in-out infinite;
       }
       canvas {
         image-rendering: pixelated;
         image-rendering: crisp-edges;
         box-shadow:
-          0 10px 40px rgba(22, 101, 52, 0.3),
-          0 0 0 4px #166534;
+          0 8px 32px rgba(22, 101, 52, 0.25),
+          0 0 0 3px #166534;
+      }
+      .sprite-pixel {
+        display: inline-block;
+        width: 3px;
+        height: 3px;
+        image-rendering: pixelated;
+      }
+      .sprite-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 21px;
+        height: 21px;
+        vertical-align: middle;
+      }
+      .message-card {
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(22, 101, 52, 0.08);
       }
     </style>
   </head>
   <body
-    class="min-h-screen flex flex-col items-center justify-center p-4 font-body text-courtDark select-none"
+    class="min-h-screen flex flex-col items-center justify-center px-4 py-6 font-body text-courtDark select-none"
   >
     <!-- Header -->
-    <header class="text-center mb-4 w-full max-w-md">
+    <header class="text-center mb-5 w-full max-w-md">
       <div class="float-anim">
         <h1
-          class="font-pixel text-lg sm:text-xl leading-relaxed text-court mb-2 tracking-tight"
+          class="font-display text-[2rem] sm:text-[2.5rem] font-extrabold leading-[0.95] text-court mb-3 tracking-tight"
         >
-          FELIZ CUMPLE<br />TATIANA
+          FELIZ CUMPLE<br /><span class="text-courtLight">TATIANA</span>
         </h1>
       </div>
-      <div class="flex justify-center gap-1 text-lg">
-        <span class="twinkle" style="animation-delay: 0s">🎾</span>
-        <span class="twinkle" style="animation-delay: 0.3s">✨</span>
-        <span class="twinkle" style="animation-delay: 0.6s">🎂</span>
-        <span class="twinkle" style="animation-delay: 0.9s">✨</span>
-        <span class="twinkle" style="animation-delay: 1.2s">🎾</span>
+      <div class="flex justify-center gap-2 text-lg mt-2">
+        <span
+          class="sprite-wrap twinkle"
+          style="animation-delay: 0s"
+          data-sprite="tennis"
+        ></span>
+        <span
+          class="sprite-wrap twinkle"
+          style="animation-delay: 0.3s"
+          data-sprite="sparkle"
+        ></span>
+        <span
+          class="sprite-wrap twinkle"
+          style="animation-delay: 0.6s"
+          data-sprite="cake"
+        ></span>
+        <span
+          class="sprite-wrap twinkle"
+          style="animation-delay: 0.9s"
+          data-sprite="sparkle"
+        ></span>
+        <span
+          class="sprite-wrap twinkle"
+          style="animation-delay: 1.2s"
+          data-sprite="tennis"
+        ></span>
       </div>
     </header>
 
     <!-- Mensaje -->
-    <section class="text-center mb-5 px-2 max-w-xs">
+    <section
+      class="message-card text-center mb-6 px-5 py-4 rounded-2xl max-w-xs w-full"
+    >
       <p
-        class="text-sm sm:text-base leading-relaxed font-semibold text-court/90"
+        class="text-[0.95rem] sm:text-base leading-relaxed font-semibold text-court/90"
       >
         Soy torpe con los palitos chinos,<br />
         pero no tanto con los computadores.
       </p>
-      <p class="text-sm sm:text-base mt-2 text-court/80">
+      <p class="text-sm sm:text-[0.95rem] mt-2 text-court/70 font-medium">
         Que pases un lindo dia.
       </p>
     </section>
 
     <!-- Juego -->
-    <div class="relative mb-5">
+    <div class="relative mb-6">
       <canvas
         id="tennis"
         width="280"
         height="380"
-        class="rounded-lg bg-court max-w-full h-auto block"
+        class="rounded-xl bg-court max-w-full h-auto block"
       ></canvas>
       <div
         id="gameOverlay"
-        class="crt-scanline absolute inset-0 rounded-lg pointer-events-none"
+        class="crt-scanline absolute inset-0 rounded-xl pointer-events-none"
       ></div>
 
       <!-- Controles info -->
-      <div class="absolute -bottom-6 left-0 right-0 text-center">
+      <div class="absolute -bottom-5 left-0 right-0 text-center">
         <p
-          class="text-[10px] text-court/60 font-pixel tracking-wider uppercase"
+          class="text-[9px] text-court/50 font-pixel tracking-[0.15em] uppercase"
         >
           Toca para jugar
         </p>
@@ -140,12 +191,14 @@
     </div>
 
     <!-- Firma -->
-    <footer class="text-center mt-4 mb-6">
-      <p class="text-xs text-court/60 font-pixel tracking-widest uppercase">
+    <footer class="text-center mt-3 mb-4">
+      <p
+        class="text-[10px] text-court/50 font-pixel tracking-[0.2em] uppercase"
+      >
         Att.
       </p>
-      <p class="text-sm font-bold text-court mt-1">
-        Juan, el ñero del twingo con planta 🚗🔊
+      <p class="text-sm font-bold text-court mt-1 tracking-wide">
+        Juan, el nero del twingo con planta
       </p>
     </footer>
 
@@ -180,7 +233,7 @@
         const baseSpeed = 2.5;
         let speedMult = 1.0;
 
-        // Partículas (cuando rebota)
+        // Particulas (cuando rebota)
         let particles = [];
 
         function createParticles(x, y, color) {
@@ -228,17 +281,17 @@
           ctx.fillStyle = "#166534";
           ctx.fillRect(0, 0, W, H);
 
-          // Líneas de cancha (pixel art style)
+          // Lineas de cancha (pixel art style)
           ctx.strokeStyle = "#4ade80";
           ctx.lineWidth = 2;
 
           // Contorno
           ctx.strokeRect(10, 10, W - 20, H - 20);
 
-          // Línea central
+          // Linea central
           drawNet();
 
-          // Líneas de saque
+          // Lineas de saque
           ctx.beginPath();
           ctx.moveTo(10, H / 2 - 60);
           ctx.lineTo(W - 10, H / 2 - 60);
@@ -246,7 +299,7 @@
           ctx.lineTo(W - 10, H / 2 + 60);
           ctx.stroke();
 
-          // Líneas verticales de saque
+          // Lineas verticales de saque
           ctx.beginPath();
           ctx.moveTo(W / 2, 10);
           ctx.lineTo(W / 2, H / 2 - 60);
@@ -420,7 +473,7 @@
             ball.x <= player.x + paddleW
           ) {
             ball.dy = -Math.abs(ball.dy);
-            // Efecto de ángulo según dónde golpea
+            // Efecto de angulo segun donde golpea
             let hitPoint = (ball.x - player.x) / paddleW;
             ball.dx = (hitPoint - 0.5) * 5;
             speedMult = Math.min(speedMult + 0.05, 1.6);
