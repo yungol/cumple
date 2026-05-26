@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>Feliz Cumpleaños Tatiana 🎾</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              pixel: ['"Press Start 2P"', "cursive"],
+              body: ["Quicksand", "sans-serif"],
+            },
+            colors: {
+              court: "#166534",
+              courtLight: "#22c55e",
+              courtDark: "#14532d",
+              mint: "#dcfce7",
+              mintDark: "#86efac",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #f0fdf4;
+        overscroll-behavior: none;
+        touch-action: none;
+      }
+      .crt-scanline {
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.05),
+          rgba(0, 0, 0, 0.05) 1px,
+          transparent 1px,
+          transparent 2px
+        );
+        pointer-events: none;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      .float-anim {
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .twinkle {
+        animation: twinkle 2s ease-in-out infinite;
+      }
+      canvas {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        box-shadow:
+          0 10px 40px rgba(22, 101, 52, 0.3),
+          0 0 0 4px #166534;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen flex flex-col items-center justify-center p-4 font-body text-courtDark select-none"
+  >
+    <!-- Header -->
+    <header class="text-center mb-4 w-full max-w-md">
+      <div class="float-anim">
+        <h1
+          class="font-pixel text-lg sm:text-xl leading-relaxed text-court mb-2 tracking-tight"
+        >
+          FELIZ CUMPLE<br />TATIANA
+        </h1>
+      </div>
+      <div class="flex justify-center gap-1 text-lg">
+        <span class="twinkle" style="animation-delay: 0s">🎾</span>
+        <span class="twinkle" style="animation-delay: 0.3s">✨</span>
+        <span class="twinkle" style="animation-delay: 0.6s">🎂</span>
+        <span class="twinkle" style="animation-delay: 0.9s">✨</span>
+        <span class="twinkle" style="animation-delay: 1.2s">🎾</span>
+      </div>
+    </header>
+
+    <!-- Mensaje -->
+    <section class="text-center mb-5 px-2 max-w-xs">
+      <p
+        class="text-sm sm:text-base leading-relaxed font-semibold text-court/90"
+      >
+        Soy torpe con los palitos chinos,<br />
+        pero no tanto con los computadores.
+      </p>
+      <p class="text-sm sm:text-base mt-2 text-court/80">
+        Que pases un lindo dia.
+      </p>
+    </section>
+
+    <!-- Juego -->
+    <div class="relative mb-5">
+      <canvas
+        id="tennis"
+        width="280"
+        height="380"
+        class="rounded-lg bg-court max-w-full h-auto block"
+      ></canvas>
+      <div
+        id="gameOverlay"
+        class="crt-scanline absolute inset-0 rounded-lg pointer-events-none"
+      ></div>
+
+      <!-- Controles info -->
+      <div class="absolute -bottom-6 left-0 right-0 text-center">
+        <p
+          class="text-[10px] text-court/60 font-pixel tracking-wider uppercase"
+        >
+          Toca para jugar
+        </p>
+      </div>
+    </div>
+
+    <!-- Firma -->
+    <footer class="text-center mt-4 mb-6">
+      <p class="text-xs text-court/60 font-pixel tracking-widest uppercase">
+        Att.
+      </p>
+      <p class="text-sm font-bold text-court mt-1">
+        Juan, el ñero del twingo con planta 🚗🔊
+      </p>
+    </footer>
+
+    <script>
+      (function () {
+        const canvas = document.getElementById("tennis");
+        const ctx = canvas.getContext("2d");
+        const W = canvas.width;
+        const H = canvas.height;
+
+        // Estado del juego
+        let gameState = "demo"; // 'demo' = auto-play, 'playing' = usuario controla
+        let demoTimer = 0;
+        let demoMessageAlpha = 1;
+
+        // Paletas
+        const paddleW = 56;
+        const paddleH = 8;
+        let player = { x: W / 2 - paddleW / 2, y: H - 20, score: 0 };
+        let cpu = { x: W / 2 - paddleW / 2, y: 12, score: 0 };
+
+        // Pelota
+        let ball = {
+          x: W / 2,
+          y: H / 2,
+          dx: 2.5,
+          dy: -2.5,
+          r: 4,
+        };
+
+        // Velocidad base
+        const baseSpeed = 2.5;
+        let speedMult = 1.0;
+
+        // Partículas (cuando rebota)
+        let particles = [];
+
+        function createParticles(x, y, color) {
+          for (let i = 0; i < 6; i++) {
+            particles.push({
+              x: x,
+              y: y,
+              dx: (Math.random() - 0.5) * 4,
+              dy: (Math.random() - 0.5) * 4,
+              life: 1.0,
+              color: color,
+            });
+          }
+        }
+
+        function resetBall(direction) {
+          ball.x = W / 2;
+          ball.y = H / 2;
+          ball.dx =
+            (Math.random() > 0.5 ? 1 : -1) *
+            baseSpeed *
+            (0.8 + Math.random() * 0.4);
+          ball.dy = direction * baseSpeed * (0.9 + Math.random() * 0.3);
+          speedMult = 1.0;
+        }
+
+        function drawPixelRect(x, y, w, h, color) {
+          ctx.fillStyle = color;
+          ctx.fillRect(Math.round(x), Math.round(y), w, h);
+        }
+
+        function drawNet() {
+          ctx.strokeStyle = "#4ade80";
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 6]);
+          ctx.beginPath();
+          ctx.moveTo(0, H / 2);
+          ctx.lineTo(W, H / 2);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        function drawCourt() {
+          // Fondo
+          ctx.fillStyle = "#166534";
+          ctx.fillRect(0, 0, W, H);
+
+          // Líneas de cancha (pixel art style)
+          ctx.strokeStyle = "#4ade80";
+          ctx.lineWidth = 2;
+
+          // Contorno
+          ctx.strokeRect(10, 10, W - 20, H - 20);
+
+          // Línea central
+          drawNet();
+
+          // Líneas de saque
+          ctx.beginPath();
+          ctx.moveTo(10, H / 2 - 60);
+          ctx.lineTo(W - 10, H / 2 - 60);
+          ctx.moveTo(10, H / 2 + 60);
+          ctx.lineTo(W - 10, H / 2 + 60);
+          ctx.stroke();
+
+          // Líneas verticales de saque
+          ctx.beginPath();
+          ctx.moveTo(W / 2, 10);
+          ctx.lineTo(W / 2, H / 2 - 60);
+          ctx.moveTo(W / 2, H / 2 + 60);
+          ctx.lineTo(W / 2, H - 10);
+          ctx.stroke();
+        }
+
+        function drawPaddle(p) {
+          // Sombra
+          drawPixelRect(p.x + 2, p.y + 2, paddleW, paddleH, "rgba(0,0,0,0.3)");
+          // Paleta
+          drawPixelRect(p.x, p.y, paddleW, paddleH, "#bbf7d0");
+          drawPixelRect(p.x + 2, p.y + 2, paddleW - 4, paddleH - 4, "#86efac");
+          // Detalle
+          drawPixelRect(p.x + 8, p.y + 2, paddleW - 16, 1, "#4ade80");
+        }
+
+        function drawBall() {
+          // Sombra
+          ctx.fillStyle = "rgba(0,0,0,0.2)";
+          ctx.fillRect(
+            Math.round(ball.x - ball.r + 2),
+            Math.round(ball.y - ball.r + 2),
+            ball.r * 2,
+            ball.r * 2,
+          );
+          // Pelota (cuadrada para estilo pixel)
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(
+            Math.round(ball.x - ball.r),
+            Math.round(ball.y - ball.r),
+            ball.r * 2,
+            ball.r * 2,
+          );
+          // Brillo
+          ctx.fillStyle = "#dcfce7";
+          ctx.fillRect(
+            Math.round(ball.x - ball.r + 1),
+            Math.round(ball.y - ball.r + 1),
+            2,
+            2,
+          );
+        }
+
+        function drawParticles() {
+          for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i];
+            ctx.fillStyle = p.color.replace("1.0", p.life.toFixed(2));
+            ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, 2);
+            p.x += p.dx;
+            p.y += p.dy;
+            p.life -= 0.05;
+            if (p.life <= 0) particles.splice(i, 1);
+          }
+        }
+
+        function drawScore() {
+          ctx.font = '10px "Press Start 2P"';
+          ctx.fillStyle = "rgba(255,255,255,0.6)";
+          ctx.textAlign = "center";
+          ctx.fillText(cpu.score + "  -  " + player.score, W / 2, H / 2 - 8);
+        }
+
+        function drawDemoMessage() {
+          if (demoMessageAlpha > 0) {
+            ctx.globalAlpha = demoMessageAlpha;
+            ctx.font = '8px "Press Start 2P"';
+            ctx.fillStyle = "#dcfce7";
+            ctx.textAlign = "center";
+            ctx.fillText("TOCA PARA JUGAR", W / 2, H - 40);
+            ctx.globalAlpha = 1.0;
+          }
+        }
+
+        // Input
+        let touchX = null;
+
+        canvas.addEventListener(
+          "touchstart",
+          (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            touchX = (e.touches[0].clientX - rect.left) * (W / rect.width);
+            if (gameState === "demo") {
+              gameState = "playing";
+              demoMessageAlpha = 0;
+            }
+          },
+          { passive: false },
+        );
+
+        canvas.addEventListener(
+          "touchmove",
+          (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            touchX = (e.touches[0].clientX - rect.left) * (W / rect.width);
+          },
+          { passive: false },
+        );
+
+        canvas.addEventListener(
+          "touchend",
+          (e) => {
+            e.preventDefault();
+            touchX = null;
+          },
+          { passive: false },
+        );
+
+        canvas.addEventListener("mousedown", (e) => {
+          const rect = canvas.getBoundingClientRect();
+          touchX = (e.clientX - rect.left) * (W / rect.width);
+          if (gameState === "demo") {
+            gameState = "playing";
+            demoMessageAlpha = 0;
+          }
+        });
+
+        canvas.addEventListener("mousemove", (e) => {
+          if (e.buttons > 0) {
+            const rect = canvas.getBoundingClientRect();
+            touchX = (e.clientX - rect.left) * (W / rect.width);
+          }
+        });
+
+        canvas.addEventListener("mouseup", () => {
+          touchX = null;
+        });
+
+        // IA CPU
+        function updateCPU() {
+          let target = ball.x - paddleW / 2;
+          let diff = target - cpu.x;
+          let speed = gameState === "demo" ? 2.2 : 2.8;
+          cpu.x += diff * 0.08;
+          cpu.x = Math.max(10, Math.min(W - paddleW - 10, cpu.x));
+        }
+
+        // Jugador
+        function updatePlayer() {
+          if (touchX !== null) {
+            let target = touchX - paddleW / 2;
+            player.x += (target - player.x) * 0.3;
+          } else if (gameState === "demo") {
+            // En modo demo, la paleta del jugador sigue la pelota con delay
+            let target = ball.x - paddleW / 2;
+            player.x += (target - player.x) * 0.06;
+          }
+          player.x = Math.max(10, Math.min(W - paddleW - 10, player.x));
+        }
+
+        function updateBall() {
+          ball.x += ball.dx * speedMult;
+          ball.y += ball.dy * speedMult;
+
+          // Rebote paredes
+          if (ball.x - ball.r < 10 || ball.x + ball.r > W - 10) {
+            ball.dx = -ball.dx;
+            ball.x = ball.x - ball.r < 10 ? 10 + ball.r : W - 10 - ball.r;
+            createParticles(ball.x, ball.y, "rgba(132, 239, 172, 1.0)");
+          }
+
+          // Rebote paleta jugador
+          if (
+            ball.dy > 0 &&
+            ball.y + ball.r >= player.y &&
+            ball.y - ball.r <= player.y + paddleH &&
+            ball.x >= player.x &&
+            ball.x <= player.x + paddleW
+          ) {
+            ball.dy = -Math.abs(ball.dy);
+            // Efecto de ángulo según dónde golpea
+            let hitPoint = (ball.x - player.x) / paddleW;
+            ball.dx = (hitPoint - 0.5) * 5;
+            speedMult = Math.min(speedMult + 0.05, 1.6);
+            createParticles(ball.x, player.y, "rgba(255, 255, 255, 1.0)");
+          }
+
+          // Rebote paleta CPU
+          if (
+            ball.dy < 0 &&
+            ball.y - ball.r <= cpu.y + paddleH &&
+            ball.y + ball.r >= cpu.y &&
+            ball.x >= cpu.x &&
+            ball.x <= cpu.x + paddleW
+          ) {
+            ball.dy = Math.abs(ball.dy);
+            let hitPoint = (ball.x - cpu.x) / paddleW;
+            ball.dx = (hitPoint - 0.5) * 5;
+            speedMult = Math.min(speedMult + 0.05, 1.6);
+            createParticles(
+              ball.x,
+              cpu.y + paddleH,
+              "rgba(255, 255, 255, 1.0)",
+            );
+          }
+
+          // Punto CPU
+          if (ball.y > H) {
+            cpu.score++;
+            createParticles(ball.x, H - 5, "rgba(255, 100, 100, 1.0)");
+            resetBall(-1);
+          }
+
+          // Punto Jugador
+          if (ball.y < 0) {
+            player.score++;
+            createParticles(ball.x, 5, "rgba(132, 239, 172, 1.0)");
+            resetBall(1);
+          }
+        }
+
+        function update() {
+          updateCPU();
+          updatePlayer();
+          updateBall();
+
+          // Demo message fade
+          if (gameState === "demo") {
+            demoTimer++;
+            if (demoTimer > 180) {
+              demoMessageAlpha = Math.max(0, demoMessageAlpha - 0.02);
+            }
+          }
+        }
+
+        function draw() {
+          drawCourt();
+          drawScore();
+          drawPaddle(player);
+          drawPaddle(cpu);
+          drawBall();
+          drawParticles();
+          drawDemoMessage();
+        }
+
+        function loop() {
+          update();
+          draw();
+          requestAnimationFrame(loop);
+        }
+
+        // Sprite generator
+        (function () {
+          const SPRITES = {
+            sparkle: [
+              "...#...",
+              "..###..",
+              ".#.#.#.",
+              "###W###",
+              ".#.#.#.",
+              "..###..",
+              "...#...",
+            ],
+            tennis: [
+              ".......",
+              "..ggg..",
+              ".gGGGg.",
+              "gG...Gg",
+              "gG.w.Gg",
+              ".gGGGg.",
+              "..ggg..",
+            ],
+            cake: [
+              ".......",
+              ".ccccc.",
+              ".cC.Cc.",
+              ".ccccc.",
+              "..vvv..",
+              "..vfv..",
+              "..vvv..",
+            ],
+          };
+          const PALETTE = {
+            "#": "#eab308",
+            ".": "#fde047",
+            W: "#fef08a",
+            g: "#22c55e",
+            G: "#16a34a",
+            w: "#dcfce7",
+            c: "#b45309",
+            C: "#fde68a",
+            v: "#fcd34d",
+            f: "#f97316",
+          };
+          const PX = 3;
+          document.querySelectorAll("[data-sprite]").forEach(function (el) {
+            const name = el.getAttribute("data-sprite");
+            const grid = SPRITES[name];
+            if (!grid) return;
+            const pixel = document.createElement("span");
+            pixel.className = "sprite-pixel";
+            const shadows = [];
+            for (let y = 0; y < grid.length; y++) {
+              for (let x = 0; x < grid[y].length; x++) {
+                const ch = grid[y][x];
+                if (PALETTE[ch]) {
+                  shadows.push(
+                    x * PX + "px " + y * PX + "px 0 0 " + PALETTE[ch],
+                  );
+                }
+              }
+            }
+            pixel.style.boxShadow = shadows.join(", ");
+            el.appendChild(pixel);
+          });
+        })();
+
+        // Iniciar
+        resetBall(1);
+        loop();
+      })();
+    </script>
+  </body>
+</html>
