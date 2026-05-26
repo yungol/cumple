@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700;800&family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
     <script>
@@ -20,6 +20,7 @@
           extend: {
             fontFamily: {
               display: ["Outfit", "sans-serif"],
+              mono: ['"JetBrains Mono"', "monospace"],
               pixel: ['"Press Start 2P"', "cursive"],
               body: ["Quicksand", "sans-serif"],
             },
@@ -118,7 +119,7 @@
     <header class="text-center mb-5 w-full max-w-md">
       <div class="float-anim">
         <h1
-          class="font-display text-[2rem] sm:text-[2.5rem] font-extrabold leading-[0.95] text-court mb-3 tracking-tight"
+          class="font-pixel text-[2rem] sm:text-[2.5rem] font-extrabold leading-[0.95] text-court mb-3 tracking-tight"
         >
           FELIZ CUMPLE<br /><span class="text-courtLight">TATIANA</span>
         </h1>
@@ -157,12 +158,14 @@
       class="message-card text-center mb-6 px-5 py-4 rounded-2xl max-w-xs w-full"
     >
       <p
-        class="text-[0.95rem] sm:text-base leading-relaxed font-semibold text-court/90"
+        class="text-[0.95rem] sm:text-base leading-relaxed font-mono font-semibold text-court/90"
       >
         Soy torpe con los palitos chinos,<br />
         pero no tanto con los computadores.
       </p>
-      <p class="text-sm sm:text-[0.95rem] mt-2 text-court/70 font-medium">
+      <p
+        class="text-sm sm:text-[0.95rem] mt-2 text-court/70 font-mono font-medium"
+      >
         Que pases un lindo dia.
       </p>
     </section>
@@ -183,7 +186,7 @@
       <!-- Controles info -->
       <div class="absolute -bottom-5 left-0 right-0 text-center">
         <p
-          class="text-[9px] text-court/50 font-pixel tracking-[0.15em] uppercase"
+          class="text-[9px] text-court/50 font-mono font-bold tracking-[0.15em] uppercase"
         >
           Toca para jugar
         </p>
@@ -192,13 +195,11 @@
 
     <!-- Firma -->
     <footer class="text-center mt-3 mb-4">
-      <p
-        class="text-[10px] text-court/50 font-pixel tracking-[0.2em] uppercase"
-      >
+      <p class="text-[10px] text-court/50 font-mono tracking-[0.2em] uppercase">
         Att.
       </p>
-      <p class="text-sm font-bold text-court mt-1 tracking-wide">
-        Juan, el nero del twingo con planta
+      <p class="text-sm font-mono font-bold text-court mt-1 tracking-wide">
+        Juan, el ñero del twingo con planta.
       </p>
     </footer>
 
